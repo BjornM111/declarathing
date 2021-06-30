@@ -8,12 +8,12 @@ class FilterStream(stream.Stream):
         self.ids = set()
 
     def _create(self, key, item):
-        if self._func(item):
+        if self._func(*item):
             self.ids.add(key)
             self.on_create(key, item)
 
     def _update(self, key, item):
-        if self._func(item):
+        if self._func(*item):
             if key in self.ids:
                 self.on_update(key, item)
             else:

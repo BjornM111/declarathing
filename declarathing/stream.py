@@ -6,13 +6,13 @@ class Listener(object):
         self.on_delete = on_delete
 
     def _create(self, _, item):
-        self.on_create(item)
+        self.on_create(*item)
 
     def _update(self, _, item):
-        self.on_update(item)
+        self.on_update(*item)
 
     def _delete(self, _, item):
-        self.on_delete(item)
+        self.on_delete(*item)
 
     def lock(self):
         pass
@@ -65,6 +65,13 @@ class Stream(object):
     def filter(self, func):
         from .filter import FilterStream
         return self.add_observer(FilterStream(func))
+
+    def join(self, stream, left_on=None, right_on=None):
+        from .join import JoinStream
+        join = JoinStream(left_on, right_on)
+        self.add_observer(join.left)
+        stream.add_observer(join.right)
+        return join
 
     def group_by(self, func, aggregator):
         from .group import GroupStream

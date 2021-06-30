@@ -8,7 +8,7 @@ class SumReducer(reducer.Reducer):
         self.func = func
 
     def _create(self, key, item):
-        value = self.func(item)
+        value = self.func(*item)
         self.values[key] = value
         self.data += value
         self.on_update()
@@ -17,7 +17,7 @@ class SumReducer(reducer.Reducer):
         old_data = self.data
 
         old_value = self.values[key]
-        new_value = self.func(item)
+        new_value = self.func(*item)
         self.values[key] = new_value
         self.data -= old_value
         self.data += new_value

@@ -37,10 +37,15 @@ class CollectionStream(stream.Stream):
         self.replace(items)
 
     def replace(self, items):
+        items = {
+            key if isinstance(key, tuple) else (key,):
+            value if isinstance(value, tuple) else (value,)
+            for key, value in items.items()
+        }
         for new_key, new_item in items.items():
             old_item = self.data.pop(new_key, None)
             if old_item:
-                if not self.equals(old_item, new_item):
+                if not self.equals(*old_item, *new_item):
                     self.on_update(new_key, new_item)
             else:
                 self.on_create(new_key, new_item)
@@ -49,15 +54,20 @@ class CollectionStream(stream.Stream):
         self.data = items.copy()
 
     def add(self, key, item):
+        key = key if isinstance(key, tuple) else (key,)
+        item = item if isinstance(item, tuple) else (item,)
+
         old_item = self.data.get(key)
         self.data[key] = item
         if old_item:
-            if not self.equals(old_item, item):
+            if not self.equals(*old_item, *item):
                 self.on_update(key, item)
         else:
             self.on_create(key, item)
 
     def remove(self, key, _):
+        key = key if isinstance(key, tuple) else (key,)
+
         old_item = self.data.pop(key, None)
         if old_item:
             self.on_delete(key, old_item)

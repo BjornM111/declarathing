@@ -14,25 +14,25 @@ def test_filter():
     )
     data = []
     s.listen(
-        lambda item: data.append(("created", item)),
-        lambda item: data.append(("updated", item)),
-        lambda item: data.append(("deleted", item)),
+        lambda task: data.append(("created", task)),
+        lambda task: data.append(("updated", task)),
+        lambda task: data.append(("deleted", task)),
     )
 
-    s._create(1, Task(10))
+    s._create((1,), (Task(10),))
     assert data == []
 
-    s._create(1, Task(70))
+    s._create((1,), (Task(70),))
     assert data.pop() == ("created", Task(70))
     assert data == []
 
-    s._update(1, Task(70))
+    s._update((1,), (Task(70),))
     assert data.pop() == ("updated", Task(70))
     assert data == []
 
-    s._delete(1, Task(70))
+    s._delete((1,), (Task(70),))
     assert data.pop() == ("deleted", Task(70))
     assert data == []
 
-    s._delete(2, Task(10))
+    s._delete((2,), Task(10))
     assert data == []
